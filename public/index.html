@@ -1,43 +1,191 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login e Cadastro com Firebase</title>
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
     />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
+    <!-- Firebase SDK compatível com scripts sem "type=module" -->
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
   </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
+  <body class="bg-light">
+    <div
+      class="container d-flex justify-content-center align-items-center min-vh-100"
+    >
+      <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px">
+        <!-- Abas para alternar entre login e cadastro -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link active"
+              id="login-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#login"
+              type="button"
+              role="tab"
+              aria-controls="login"
+              aria-selected="true"
+            >
+              Login
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="signup-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#signup"
+              type="button"
+              role="tab"
+              aria-controls="signup"
+              aria-selected="false"
+            >
+              Cadastro
+            </button>
+          </li>
+        </ul>
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
+        <!-- Conteúdo das abas -->
+        <div class="tab-content" id="myTabContent">
+          <!-- Formulário de Login -->
+          <div
+            class="tab-pane fade show active"
+            id="login"
+            role="tabpanel"
+            aria-labelledby="login-tab"
+          >
+            <form id="loginForm" class="mt-4">
+              <div class="mb-3">
+                <label for="loginEmail" class="form-label">Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="loginEmail"
+                  placeholder="Digite seu email"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="loginPassword" class="form-label">Senha</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="loginPassword"
+                  placeholder="Digite sua senha"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary w-100">
+                Entrar
+              </button>
+              <p class="mt-2 text-danger" id="loginError"></p>
+            </form>
+          </div>
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+          <!-- Formulário de Cadastro -->
+          <div
+            class="tab-pane fade"
+            id="signup"
+            role="tabpanel"
+            aria-labelledby="signup-tab"
+          >
+            <form id="signupForm" class="mt-4">
+              <div class="mb-3">
+                <label for="signupName" class="form-label">Nome</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="signupName"
+                  placeholder="Digite seu nome"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="signupEmail" class="form-label">Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="signupEmail"
+                  placeholder="Digite seu email"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="signupPassword" class="form-label">Senha</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="signupPassword"
+                  placeholder="Digite sua senha"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-success w-100">
+                Cadastrar
+              </button>
+              <p class="mt-2 text-danger" id="signupError"></p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      // Função de cadastro
+      document.getElementById("signupForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const email = document.getElementById("signupEmail").value;
+        const password = document.getElementById("signupPassword").value;
+
+        // Enviar dados para o backend via API
+        fetch("https://server-api-petcardio-production.up.railway.app/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            alert("Cadastro realizado com sucesso!");
+            document.getElementById("signupForm").reset();
+          })
+          .catch((error) => {
+            document.getElementById("signupError").textContent = error.message;
+          });
+      });
+
+      // Função de login
+      document.getElementById("loginForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const email = document.getElementById("loginEmail").value;
+        const password = document.getElementById("loginPassword").value;
+
+        // Enviar dados para o backend via API
+        fetch("https://server-api-petcardio-production.up.railway.app/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            alert("Login realizado com sucesso!");
+            document.getElementById("loginForm").reset();
+          })
+          .catch((error) => {
+            document.getElementById("loginError").textContent = error.message;
+          });
+      });
+    </script>
   </body>
 </html>
