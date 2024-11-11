@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitoramento de ECG com Chart.js</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .container {
+      margin-top: 50px;
+    }
+
+    canvas {
+      width: 100%;
+      height: 400px;
+    }
+
+    #textOutput {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      background-color: #f4f4f4;
+      max-width: 500px;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>Monitoramento de ECG</h2>
+    <p>Visualização em tempo real dos dados de ECG recebidos.</p>
+    <hr>
+    <h4>Gráfico ECG</h4>
+    <canvas id="ecgChart"></canvas>
+    <h4>Texto de Dados Recebidos</h4>
+    <div id="textOutput">Aguardando dados...</div>
+    <hr>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('ecgChart').getContext('2d');
+    const ecgChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'ECG',
+          data: [],
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 2,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            type: 'linear',
+            title: {
+              display: true,
+              text: 'Tempo (ms)'
+            },
+            min: 0,
+            max: 10000
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Amplitude'
+            }
+          }
+        },
+        animation: {
+          duration: 0
+        }
+      }
+    });
+
+    let dataBuffer = [];
+    const updateFrequency = 500; // Atualizar o gráfico a cada 500ms
+    let lastTimestamp = -1; // Variável para armazenar o timestamp anterior
+
+    const eventSource = new EventSource('https://server-api-petcardio-production.up.railway.app/events');
+    eventSource.onmessage = (event) => {
+      const numbers = event.data.match(/\d+/g);
+
+      if (numbers && numbers.length >= 2) {
+        const ecgValue = parseInt(numbers[0], 10);
+        const timestamp = parseInt(numbers[1], 10);
+
+        if (ecgValue >= 0 && timestamp >= 0) {
+          // Verifica se o timestamp é menor que o anterior
+          if (timestamp < lastTimestamp) {
+            console.log("Timestamp menor que o anterior, resetando o gráfico.");
+            ecgChart.data.labels = [];  // Limpa os rótulos
+            ecgChart.data.datasets[0].data = [];  // Limpa os dados
+            ecgChart.update();  // Atualiza o gráfico
+          }
+
+          // Atualiza o timestamp anterior
+          lastTimestamp = timestamp;
+
+          // Adiciona o novo valor ao buffer
+          dataBuffer.push({ timestamp, ecgValue });
+          document.getElementById('textOutput').innerText = `Últimos dados: ECG = ${ecgValue}, Tempo = ${timestamp}`;
+        }
+      }
+    };
+
+    setInterval(() => {
+      if (dataBuffer.length) {
+        dataBuffer.forEach(({ timestamp, ecgValue }) => {
+          ecgChart.data.labels.push(timestamp);
+          ecgChart.data.datasets[0].data.push(ecgValue);
+        });
+
+        const windowSize = 10000;
+        const maxTimestamp = dataBuffer[dataBuffer.length - 1].timestamp;
+        const minTimestamp = maxTimestamp - windowSize;
+
+        ecgChart.options.scales.x.min = minTimestamp;
+        ecgChart.options.scales.x.max = maxTimestamp;
+        ecgChart.update();
+
+        dataBuffer = [];
+      }
+    }, updateFrequency);
+  </script>
+
+</body>
+
+</html>
