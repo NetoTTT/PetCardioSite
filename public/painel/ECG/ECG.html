@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Monitoramento de ECG com Chart.js</title>
+  <!-- Link para o Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .container {
@@ -28,17 +30,30 @@
 </head>
 
 <body>
+  <!-- Barra de navegação -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">PetCardio - Monitoramento de ECG</a>
+    </div>
+  </nav>
+
   <div class="container">
-    <h2>Monitoramento de ECG</h2>
-    <p>Visualização em tempo real dos dados de ECG recebidos.</p>
+    <h2 class="my-4">Monitoramento de ECG</h2>
+    <p class="lead">Visualização em tempo real dos dados de ECG recebidos do seu dispositivo.</p>
     <hr>
-    <h4>Gráfico ECG</h4>
+
+    <h4>Gráfico de ECG</h4>
     <canvas id="ecgChart"></canvas>
-    <h4>Texto de Dados Recebidos</h4>
-    <div id="textOutput">Aguardando dados...</div>
+
+    <h4 class="mt-4">Texto de Dados Recebidos</h4>
+    <div id="textOutput" class="alert alert-secondary">Aguardando dados...</div>
+
     <hr>
   </div>
 
+  <!-- Scripts do Bootstrap 5 e o seu script de Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     const ctx = document.getElementById('ecgChart').getContext('2d');
     const ecgChart = new Chart(ctx, {
@@ -128,7 +143,6 @@
       }
     }, updateFrequency);
   </script>
-
 </body>
 
 </html>
