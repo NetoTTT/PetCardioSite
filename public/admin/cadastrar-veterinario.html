@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastrar Veterinário</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+  <div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card shadow-lg p-4" style="width: 100%; max-width: 500px;">
+      <h2 class="text-center mb-4">Cadastro de Veterinário</h2>
+      <form id="veterinarioForm">
+        <div class="mb-3">
+          <label for="veterinarioNome" class="form-label">Nome</label>
+          <input type="text" class="form-control" id="veterinarioNome" required>
+        </div>
+        <div class="mb-3">
+          <label for="veterinarioEmail" class="form-label">Email</label>
+          <input type="email" class="form-control" id="veterinarioEmail" required>
+        </div>
+        <div class="mb-3">
+          <label for="veterinarioSenha" class="form-label">Senha</label>
+          <input type="password" class="form-control" id="veterinarioSenha" required>
+        </div>
+        <div class="mb-3">
+          <label for="veterinarioCPF" class="form-label">CPF</label>
+          <input type="text" class="form-control" id="veterinarioCPF" required>
+        </div>
+        <button type="submit" class="btn btn-success w-100">Cadastrar</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.getElementById("veterinarioForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const nome = document.getElementById("veterinarioNome").value;
+      const email = document.getElementById("veterinarioEmail").value;
+      const senha = document.getElementById("veterinarioSenha").value;
+      const cpf = document.getElementById("veterinarioCPF").value;
+
+      fetch("https://server-api-petcardio-production.up.railway.app/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ nome, email, senha, cpf })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert("Veterinário cadastrado com sucesso!");
+          document.getElementById("veterinarioForm").reset();
+        } else {
+          alert("Erro ao cadastrar veterinário: " + data.message);
+        }
+      })
+      .catch(error => {
+        alert("Erro ao cadastrar veterinário: " + error.message);
+      });
+    });
+  </script>
+</body>
+</html>
