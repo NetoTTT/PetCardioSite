@@ -97,7 +97,7 @@
     const updateFrequency = 500; // Atualizar o gráfico a cada 500ms
     let lastTimestamp = -1; // Variável para armazenar o timestamp anterior
 
-    const eventSource = new EventSource('https://server-api-petcardio-production.up.railway.app/events');
+    const eventSource = new EventSource('https://amusing-rejoicing-production-0fd8.up.railway.app/events');
     eventSource.onmessage = (event) => {
       const numbers = event.data.match(/\d+/g);
 
@@ -105,7 +105,7 @@
         const ecgValue = parseInt(numbers[0], 10);
         const timestamp = parseInt(numbers[1], 10);
 
-        if (ecgValue >= 0 && timestamp >= 0) {
+        if (ecgValue >= 0 && timestamp >= 0) { 
           // Verifica se o timestamp é menor que o anterior
           if (timestamp < lastTimestamp) {
             console.log("Timestamp menor que o anterior, resetando o gráfico.");

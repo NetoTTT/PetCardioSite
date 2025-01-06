@@ -284,7 +284,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-      // Configurações do Firebase
+      // Configurações do Firebase (Essas são minhas credenciais, troque pelas suas)
       const firebaseConfig = {
         apiKey: "AIzaSyD-1Jy98ZHXn6NWy8X3OPYlEg6f9NAIqEE",
         authDomain: "petcardio-9cabf.firebaseapp.com",
@@ -327,7 +327,7 @@
         // Definindo o tipo de usuário como 'petDono' (porque está vindo da tela index)
         const userType = "petDono";
 
-        fetch("https://server-api-petcardio-production.up.railway.app/signup", {
+        fetch("https://amusing-rejoicing-production-0fd8.up.railway.app/signup", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -367,7 +367,7 @@
           })
           .then((token) => {
             return fetch(
-              "https://server-api-petcardio-production.up.railway.app/login",
+              "https://amusing-rejoicing-production-0fd8.up.railway.app/login",
               {
                 method: "POST",
                 headers: {
@@ -433,7 +433,7 @@
 
           // Envia o email e a senha para a API para validação
           fetch(
-            "https://server-api-petcardio-production.up.railway.app/admin/auth",
+            "https://amusing-rejoicing-production-0fd8.up.railway.app/admin/auth",
             {
               method: "POST",
               headers: {
@@ -477,7 +477,7 @@
 
           // Envia o email para o endpoint /verifyEmail
           fetch(
-            "https://server-api-petcardio-production.up.railway.app/verifyEmail",
+            "https://amusing-rejoicing-production-0fd8.up.railway.app/verifyEmail",
             {
               method: "POST",
               headers: {
